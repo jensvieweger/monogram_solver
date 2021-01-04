@@ -1,6 +1,12 @@
 #include <iostream>
 #include <random>
 
+#ifndef NDEBUG 
+#define D(x) (x)
+#else 
+#define D(x) do{}while(0)
+#endif
+
 struct numberline
 {
     int cnt;
@@ -113,15 +119,16 @@ int check_map(struct map *map)
                     in_seq = true;
                     if (seq_idx + 1 > map->cols[x].cnt)
                     {
-                        // std::cout << "Error! col " << x << " , " << y << " more sequences than allowed! Should be " << map->cols[x].cnt << " but is " << seq_idx << " !" << std::endl;
+                        D(std::cout << "Error! col " << x << " , " << y << " more sequences than allowed! Should be " 
+                          << map->cols[x].cnt << " but is " << seq_idx << " !" << std::endl);
                         return 1;
                     }
                 }
                 seq_len++;
                 if (seq_len > map->cols[x].nums[seq_idx])
                 {
-                    // std::cout << "Error! col " << x << " , " << y << " sequence " << seq_idx << " longer than allowed! Should be " << map->cols[x].nums[seq_idx]
-                    //           << " but is " << seq_len << " !" << std::endl;
+                    D(std::cout << "Error! col " << x << " , " << y << " sequence " << seq_idx << " longer than allowed! Should be " << map->cols[x].nums[seq_idx]
+                      << " but is " << seq_len << " !" << std::endl);
                     return 1;
                 }
             }
@@ -132,8 +139,8 @@ int check_map(struct map *map)
                     in_seq = false;
                     if (seq_len != map->cols[x].nums[seq_idx])
                     {
-                        // std::cout << "Error! col " << x << " , " << y << " sequence " << seq_idx << " length does not match! Should be " << map->cols[x].nums[seq_idx]
-                        //           << " but is " << seq_len << " !" << std::endl;
+                        D(std::cout << "Error! col " << x << " , " << y << " sequence " << seq_idx << " length does not match! Should be " << map->cols[x].nums[seq_idx]
+                          << " but is " << seq_len << " !" << std::endl);
                         return 1;
                     }
                     seq_len = 0;
@@ -144,8 +151,8 @@ int check_map(struct map *map)
 
         if (seq_len != map->cols[x].nums[seq_idx])
         {
-            // std::cout << "Error! col " << x << " sequence " << seq_idx << " length does not match! Should be " << map->cols[x].nums[seq_idx]
-            //           << " but is " << seq_len << " !" << std::endl;
+            D(std::cout << "Error! col " << x << " sequence " << seq_idx << " length does not match! Should be " << map->cols[x].nums[seq_idx]
+              << " but is " << seq_len << " !" << std::endl);
             return 1;
         }
 
@@ -156,14 +163,15 @@ int check_map(struct map *map)
 
         if (seq_idx != map->cols[x].cnt)
         {
-            // std::cout << "Error! col " << x << " number of sequences do not match! Should be " << map->cols[x].cnt << " but is " << seq_idx << " !" << std::endl;
+            D(std::cout << "Error! col " << x << " number of sequences do not match! Should be "
+              << map->cols[x].cnt << " but is " << seq_idx << " !" << std::endl);
             return 1;
         }
 
         if (overall_cnt_is != overall_cnt_should)
         {
-            // std::cout << "Error! col " << x << " pixel count does not match! Should be " << overall_cnt_should
-            //           << " but is " << overall_cnt_is << " !" << std::endl;
+            D(std::cout << "Error! col " << x << " pixel count does not match! Should be " << overall_cnt_should
+              << " but is " << overall_cnt_is << " !" << std::endl);
             return 1;
         }
     }
@@ -192,15 +200,16 @@ int check_map(struct map *map)
                     in_seq = true;
                     if (seq_idx + 1 > map->rows[y].cnt)
                     {
-                        // std::cout << "Error! row " << y << " , " << x << " more sequences than allowed! Should be " << map->rows[y].cnt << " but is " << seq_idx << " !" << std::endl;
+                        D(std::cout << "Error! row " << y << " , " << x << " more sequences than allowed! Should be "
+                          << map->rows[y].cnt << " but is " << seq_idx << " !" << std::endl);
                         return 1;
                     }
                 }
                 seq_len++;
                 if (seq_len > map->rows[y].nums[seq_idx])
                 {
-                    // std::cout << "Error! row " << y << " , " << x << " sequence " << seq_idx << " longer than allowed! Should be " << map->rows[y].nums[seq_idx]
-                    //           << " but is " << seq_len << " !" << std::endl;
+                    D(std::cout << "Error! row " << y << " , " << x << " sequence " << seq_idx << " longer than allowed! Should be " << map->rows[y].nums[seq_idx]
+                      << " but is " << seq_len << " !" << std::endl);
                     return 1;
                 }
             }
@@ -211,8 +220,8 @@ int check_map(struct map *map)
                     in_seq = false;
                     if (seq_len != map->rows[y].nums[seq_idx])
                     {
-                        // std::cout << "Error! row " << y << " , " << x << " sequence " << seq_idx << " length does not match! Should be " << map->rows[y].nums[seq_idx]
-                        //           << " but is " << seq_len << " !" << std::endl;
+                        D(std::cout << "Error! row " << y << " , " << x << " sequence " << seq_idx << " length does not match! Should be " << map->rows[y].nums[seq_idx]
+                          << " but is " << seq_len << " !" << std::endl);
                         return 1;
                     }
                     seq_len = 0;
@@ -223,8 +232,8 @@ int check_map(struct map *map)
 
         if (seq_len != map->rows[y].nums[seq_idx])
         {
-            // std::cout << "Error! row " << y << " sequence " << seq_idx << " length does not match! Should be " << map->rows[y].nums[seq_idx]
-            //           << " but is " << seq_len << " !" << std::endl;
+            D(std::cout << "Error! row " << y << " sequence " << seq_idx << " length does not match! Should be " << map->rows[y].nums[seq_idx]
+              << " but is " << seq_len << " !" << std::endl);
             return 1;
         }
 
@@ -235,14 +244,15 @@ int check_map(struct map *map)
 
         if (seq_idx != map->rows[y].cnt)
         {
-            // std::cout << "Error! row " << y << " number of sequences do not match! Should be " << map->rows[y].cnt << " but is " << seq_idx << " !" << std::endl;
+            D(std::cout << "Error! row " << y << " number of sequences do not match! Should be " 
+              << map->rows[y].cnt << " but is " << seq_idx << " !" << std::endl);
             return 1;
         }
 
         if (overall_cnt_is != overall_cnt_should)
         {
-            // std::cout << "Error! row " << y << " pixel count does not match! Should be " << overall_cnt_should
-            //           << " but is " << overall_cnt_is << " !" << std::endl;
+            D(std::cout << "Error! row " << y << " pixel count does not match! Should be " << overall_cnt_should
+              << " but is " << overall_cnt_is << " !" << std::endl);
             return 1;
         }
     }
