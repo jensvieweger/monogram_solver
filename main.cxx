@@ -28,34 +28,55 @@ struct map
 
 void make_map(struct map *map)
 {
-#define XSIZE 8
-#define YSIZE 9
+// #define XSIZE 8
+// #define YSIZE 9
+
+//     int xsize = XSIZE;
+//     int ysize = YSIZE;
+//     int cols[XSIZE][2] = {{1, 2}, {3, 1}, {1, 5}, {7, 1}, {5, 0}, {3, 0}, {4, 0}, {3, 0}};
+//     int rows[YSIZE][2] = {{3, 0}, {2, 1}, {3, 2}, {2, 2}, {6, 0}, {1, 5}, {6, 0}, {1, 0}, {2, 0}};
+
+//     /* Solution:
+// . # # # . . . .
+// # # . # . . . .
+// . # # # . . # #
+// . . # # . . # #
+// . . # # # # # #
+// # . # # # # # .
+// # # # # # # . .
+// . . . . # . . .
+// . . . # # . . .
+// */
+//     bool solution[YSIZE][XSIZE] = {{0, 1, 1, 1, 0, 0, 0, 0},
+//                                    {1, 1, 0, 1, 0, 0, 0, 0},
+//                                    {0, 1, 1, 1, 0, 0, 1, 1},
+//                                    {0, 0, 1, 1, 0, 0, 1, 1},
+//                                    {0, 0, 1, 1, 1, 1, 1, 1},
+//                                    {1, 0, 1, 1, 1, 1, 1, 0},
+//                                    {1, 1, 1, 1, 1, 1, 0, 0},
+//                                    {0, 0, 0, 0, 1, 0, 0, 0},
+//                                    {0, 0, 0, 1, 1, 0, 0, 0}};
+
+#define XSIZE 5
+#define YSIZE 5
 
     int xsize = XSIZE;
     int ysize = YSIZE;
-    int cols[XSIZE][2] = {{1, 2}, {3, 1}, {1, 5}, {7, 1}, {5, 0}, {3, 0}, {4, 0}, {3, 0}};
-    int rows[YSIZE][2] = {{3, 0}, {2, 1}, {3, 2}, {2, 2}, {6, 0}, {1, 5}, {6, 0}, {1, 0}, {2, 0}};
+    int cols[XSIZE][2] = {{1, 1}, {5, 0}, {1, 1}, {5, 0}, {1, 1}};
+    int rows[YSIZE][2] = {{1, 1}, {5, 0}, {1, 1}, {5, 0}, {1, 1}};
 
     /* Solution:
-. # # # . . . .
-# # . # . . . .
-. # # # . . # #
-. . # # . . # #
-. . # # # # # #
-# . # # # # # .
-# # # # # # . .
-. . . . # . . .
-. . . # # . . .
+. # . # .
+# # # # #
+. # . # .
+# # # # #
+. # . # .
 */
-    bool solution[YSIZE][XSIZE] = {{0, 1, 1, 1, 0, 0, 0, 0},
-                                   {1, 1, 0, 1, 0, 0, 0, 0},
-                                   {0, 1, 1, 1, 0, 0, 1, 1},
-                                   {0, 0, 1, 1, 0, 0, 1, 1},
-                                   {0, 0, 1, 1, 1, 1, 1, 1},
-                                   {1, 0, 1, 1, 1, 1, 1, 0},
-                                   {1, 1, 1, 1, 1, 1, 0, 0},
-                                   {0, 0, 0, 0, 1, 0, 0, 0},
-                                   {0, 0, 0, 1, 1, 0, 0, 0}};
+    bool solution[YSIZE][XSIZE] = {{0, 1, 0, 1, 0},
+                                   {1, 1, 1, 1, 1},
+                                   {0, 1, 0, 1, 0},
+                                   {1, 1, 1, 1, 1},
+                                   {0, 1, 0, 1, 0}};
 
     map->xres = xsize;
     map->cols = new numberline[map->xres];
@@ -510,8 +531,8 @@ int main(int argc, char **argv)
     make_map(mymap);
 
     print_map(mymap);
-    solve_map_random(mymap);
-    // solve_map_random_permutate_col(mymap);
+    //solve_map_random(mymap);
+    solve_map_random_permutate_col(mymap);
     check_map(mymap);
 
     print_map(mymap);
