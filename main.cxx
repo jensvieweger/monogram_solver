@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <list>
 
 #ifndef NDEBUG
 #define D(x) (x)
@@ -90,8 +91,8 @@ void make_map(struct map *map)
         map->image[x] = new bool[map->yres];
         for (int y = 0; y < map->yres; y++)
         {
-            // map->image[x][y] = false;
-            map->image[x][y] = solution[y][x];
+            map->image[x][y] = false;
+            // map->image[x][y] = solution[y][x];
         }
     }
 
@@ -287,68 +288,6 @@ int check_map(struct map *map)
     return 0;
 }
 
-void solve_map_random(struct map *map)
-{
-    int solve_counts = 0;
-
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> disty(0, map->yres - 1); // distribution in range [0, 8]
-    std::uniform_int_distribution<std::mt19937::result_type> distx(0, map->xres - 1); // distribution in range [0, 7]
-
-    for (int x = 0; x < map->xres; x++)
-    {
-        int local_cnt = 0;
-        for (size_t i = 0; i < map->cols[x].cnt; i++)
-        {
-            local_cnt += map->cols[x].nums[i];
-        }
-
-        for (size_t i = 0; i < local_cnt; i++)
-        {
-            int y = 0;
-            do
-            {
-                y = disty(rng);
-            } while (map->image[x][y] == true);
-            map->image[x][y] = true;
-        }
-    }
-
-    // correct number of pixels set per col
-
-    while (check_map(map))
-    {
-        for (int x = 0; x < map->xres; x++)
-        {
-            //permutate col
-            for (int y = 0; y < map->yres; y++)
-            {
-                int new_y = disty(rng);
-                bool entry = map->image[x][new_y];
-                map->image[x][new_y] = map->image[x][y];
-                map->image[x][y] = entry;
-            }
-        }
-        solve_counts++;
-        if (solve_counts % 100000 == 0)
-        {
-            std::cout << "solving tries: " << solve_counts << std::endl;
-        }
-    }
-    std::cout << "solving tries: " << solve_counts << std::endl;
-}
-
-void solve_trying_good(struct map *map)
-{
-    // iterate over all possible positions for each "run" of pixels per colum.
-    // on each position, check validity of all rows
-}
-
-void solve_smart(struct map *map)
-{
-}
-
 void print_map(struct map *map)
 {
     int max_col_cnt = 0;
@@ -440,6 +379,128 @@ void delete_map(struct map *map)
     delete map;
 }
 
+void solve_map_random_permutate_col(struct map *map)
+{
+    int solve_counts = 0;
+
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> disty(0, map->yres - 1); // distribution in range [0, 8]
+    std::uniform_int_distribution<std::mt19937::result_type> distx(0, map->xres - 1); // distribution in range [0, 7]
+
+    for (int x = 0; x < map->xres; x++)
+    {
+        int local_cnt = 0;
+        for (size_t i = 0; i < map->cols[x].cnt; i++)
+        {
+            local_cnt += map->cols[x].nums[i];
+        }
+
+        for (size_t i = 0; i < local_cnt; i++)
+        {
+            int y = 0;
+            do
+            {
+                y = disty(rng);
+            } while (map->image[x][y] == true);
+            map->image[x][y] = true;
+        }
+    }
+
+    // correct number of pixels set per col
+
+    while (check_map(map))
+    {
+        for (int x = 0; x < map->xres; x++)
+        {
+            //permutate col
+            for (int y = 0; y < map->yres; y++)
+            {
+                int new_y = disty(rng);
+                bool entry = map->image[x][new_y];
+                map->image[x][new_y] = map->image[x][y];
+                map->image[x][y] = entry;
+            }
+        }
+        solve_counts++;
+        if (solve_counts % 100000 == 0)
+        {
+            print_map(map);
+            std::cout << "solving tries: " << solve_counts << std::endl;
+        }
+    }
+    std::cout << "solving tries: " << solve_counts << std::endl;
+}
+
+
+void solve_map_random(struct map *map)
+{
+    long long unsigned int solve_counts = 0;
+
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> disty(0, map->yres - 1); // distribution in range [0, 8]
+    std::uniform_int_distribution<std::mt19937::result_type> distx(0, map->xres - 1); // distribution in range [0, 7]
+    std::uniform_int_distribution<std::mt19937::result_type> distpix(0, (map->xres - 1)*(map->yres - 1)); // distribution in range [0, 8]
+
+    int num_pixels = 0;
+    std::vector<std::pair<int, int> > coords;
+    for (int x = 0; x < map->xres; x++)
+    {
+        for (size_t i = 0; i < map->cols[x].cnt; i++)
+        {
+            num_pixels += map->cols[x].nums[i];
+        }
+        for (int y = 0; y < map->yres; y++)
+        {
+            coords.push_back(std::pair<int, int>(x, y));
+        }
+    }
+
+    //std::cout << "num_pixels: " << num_pixels << " vlen " << coords.size() << std::endl;
+    while (check_map(map))
+    {
+        reset_map(map);
+        std::vector<std::pair<int, int> > this_runs_list(coords);
+        for (int i = 0; i < num_pixels; i++)
+        {
+            //std::cout << "putting pixel: " << i << std::endl;
+
+            // int new_x = 0;
+            // int new_y = 0;
+            // do
+            // {
+            //     new_x = distx(rng);
+            //     new_y = disty(rng);
+            // } while (map->image[new_x][new_y]);
+            
+            // map->image[new_x][new_y] = true;
+
+            int index = distpix(rng);
+            index = index > this_runs_list.size()-1 ? index % (this_runs_list.size()-1) : index;
+            map->image[this_runs_list[index].first][this_runs_list[index].second] = true;
+            this_runs_list.erase(this_runs_list.begin()+index);
+        }
+        solve_counts++;
+        if (solve_counts % 100000 == 0)
+        {
+            // print_map(map);
+            std::cout << "solving tries: " << solve_counts << std::endl;
+        }
+    }
+    std::cout << "solving tries: " << solve_counts << std::endl;
+}
+
+void solve_trying_good(struct map *map)
+{
+    // iterate over all possible positions for each "run" of pixels per colum.
+    // on each position, check validity of all rows
+}
+
+void solve_smart(struct map *map)
+{
+}
+
 int main(int argc, char **argv)
 {
     std::cout << "test" << std::endl;
@@ -448,7 +509,9 @@ int main(int argc, char **argv)
 
     make_map(mymap);
 
-    // solve_map_random(mymap);
+    print_map(mymap);
+    solve_map_random(mymap);
+    // solve_map_random_permutate_col(mymap);
     check_map(mymap);
 
     print_map(mymap);
