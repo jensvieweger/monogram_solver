@@ -22,6 +22,7 @@ struct map
     struct numberline *cols;
     struct numberline *rows;
     bool **image;
+    bool **solution;
 };
 
 void make_map(struct map *map)
@@ -45,6 +46,15 @@ void make_map(struct map *map)
 . . . . # . . .
 . . . # # . . .
 */
+    bool solution[YSIZE][XSIZE] = {{0, 1, 1, 1, 0, 0, 0, 0},
+                                   {1, 1, 0, 1, 0, 0, 0, 0},
+                                   {0, 1, 1, 1, 0, 0, 1, 1},
+                                   {0, 0, 1, 1, 0, 0, 1, 1},
+                                   {0, 0, 1, 1, 1, 1, 1, 1},
+                                   {1, 0, 1, 1, 1, 1, 1, 0},
+                                   {1, 1, 1, 1, 1, 1, 0, 0},
+                                   {0, 0, 0, 0, 1, 0, 0, 0},
+                                   {0, 0, 0, 1, 1, 0, 0, 0}};
 
     map->xres = xsize;
     map->cols = new numberline[map->xres];
@@ -80,7 +90,19 @@ void make_map(struct map *map)
         map->image[x] = new bool[map->yres];
         for (int y = 0; y < map->yres; y++)
         {
-            map->image[x][y] = false;
+            // map->image[x][y] = false;
+            map->image[x][y] = solution[y][x];
+        }
+    }
+
+    map->solution = new bool *[map->xres];
+
+    for (int x = 0; x < map->xres; x++)
+    {
+        map->solution[x] = new bool[map->yres];
+        for (int y = 0; y < map->yres; y++)
+        {
+            map->solution[x][y] = solution[y][x];
         }
     }
 }
@@ -259,6 +281,9 @@ int check_map(struct map *map)
             return 1;
         }
     }
+
+    D(std::cout << "Check passed!" << std::endl);
+
     return 0;
 }
 
@@ -312,6 +337,12 @@ void solve_map_random(struct map *map)
         }
     }
     std::cout << "solving tries: " << solve_counts << std::endl;
+}
+
+void solve_trying_good(struct map *map)
+{
+    // iterate over all possible positions for each "run" of pixels per colum.
+    // on each position, check validity of all rows
 }
 
 void solve_smart(struct map *map)
@@ -374,6 +405,14 @@ void print_map(struct map *map)
             std::cout << " " << (map->image[x][y] == true ? '#' : ' ');
         }
 
+        if (NULL != map->solution)
+        {
+            std::cout << "\t\t";
+            for (int x = 0; x < map->xres; x++)
+            {
+                std::cout << " " << (map->solution[x][y] == true ? '#' : ' ');
+            }
+        }
         std::cout << std::endl;
     }
 }
@@ -385,6 +424,8 @@ void delete_map(struct map *map)
         delete[] map->cols[x].nums;
 
         delete[] map->image[x];
+
+        delete[] map->solution[x];
     }
     for (int y = 0; y < map->yres; y++)
     {
@@ -394,6 +435,7 @@ void delete_map(struct map *map)
     delete[] map->cols;
     delete[] map->rows;
     delete[] map->image;
+    delete[] map->solution;
 
     delete map;
 }
@@ -406,7 +448,7 @@ int main(int argc, char **argv)
 
     make_map(mymap);
 
-    solve_map_random(mymap);
+    // solve_map_random(mymap);
     check_map(mymap);
 
     print_map(mymap);
