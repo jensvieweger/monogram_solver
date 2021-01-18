@@ -402,12 +402,14 @@ void delete_map(struct map *map)
 
 void solve_map_random_permutate_col(struct map *map)
 {
-    int solve_counts = 0;
+    long long unsigned int solve_counts = 0;
 
     std::random_device dev;
     std::mt19937 rng(dev());
     std::uniform_int_distribution<std::mt19937::result_type> disty(0, map->yres - 1); // distribution in range [0, 8]
     std::uniform_int_distribution<std::mt19937::result_type> distx(0, map->xres - 1); // distribution in range [0, 7]
+    long long unsigned int num_correct_cols[XSIZE] = {};
+
 
     for (int x = 0; x < map->xres; x++)
     {
@@ -432,6 +434,8 @@ void solve_map_random_permutate_col(struct map *map)
 
     while (check_map(map))
     {
+        int cols_correct = 0;
+        bool col_is_correct = true;
         for (int x = 0; x < map->xres; x++)
         {
             //permutate col
@@ -442,12 +446,38 @@ void solve_map_random_permutate_col(struct map *map)
                 map->image[x][new_y] = map->image[x][y];
                 map->image[x][y] = entry;
             }
+
+            // calc if col is correct & count max_num_correct_cols
+            col_is_correct = true;
+            for (int y = 0; y < map->yres; y++)
+            {
+                if (map->image[x][y] != map->solution[x][y])
+                {
+                    col_is_correct = false;
+                    break;
+                }
+
+            }
+                if (col_is_correct)
+                {
+                    cols_correct++;
+                }
+
         }
+
+        num_correct_cols[cols_correct]++;
         solve_counts++;
         if (solve_counts % 100000 == 0)
         {
             print_map(map);
             std::cout << "solving tries: " << solve_counts << std::endl;
+            std::cout << "cols correct: ";
+            for (size_t i = 0; i < XSIZE; i++)
+            {
+                std::cout << " c[" << i << "]: " << num_correct_cols[i];
+            }
+            std::cout << std::endl;
+            
         }
     }
     std::cout << "solving tries: " << solve_counts << std::endl;
