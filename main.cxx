@@ -408,7 +408,7 @@ void solve_map_random_permutate_col(struct map *map)
     std::mt19937 rng(dev());
     std::uniform_int_distribution<std::mt19937::result_type> disty(0, map->yres - 1); // distribution in range [0, 8]
     std::uniform_int_distribution<std::mt19937::result_type> distx(0, map->xres - 1); // distribution in range [0, 7]
-    long long unsigned int num_correct_cols[XSIZE] = {};
+    long long unsigned int num_correct_cols[XSIZE + 1] = {}; // +1 to also count complete misses
 
 
     for (int x = 0; x < map->xres; x++)
@@ -458,11 +458,10 @@ void solve_map_random_permutate_col(struct map *map)
                 }
 
             }
-                if (col_is_correct)
-                {
-                    cols_correct++;
-                }
-
+            if (col_is_correct)
+            {
+                cols_correct++;
+            }
         }
 
         num_correct_cols[cols_correct]++;
@@ -472,7 +471,7 @@ void solve_map_random_permutate_col(struct map *map)
             print_map(map);
             std::cout << "solving tries: " << solve_counts << std::endl;
             std::cout << "cols correct: ";
-            for (size_t i = 0; i < XSIZE; i++)
+            for (size_t i = 0; i < XSIZE+1; i++)
             {
                 std::cout << " c[" << i << "]: " << num_correct_cols[i];
             }
@@ -481,6 +480,12 @@ void solve_map_random_permutate_col(struct map *map)
         }
     }
     std::cout << "solving tries: " << solve_counts << std::endl;
+    std::cout << "cols correct: ";
+    for (size_t i = 0; i < XSIZE+1; i++)
+    {
+        std::cout << " c[" << i << "]: " << num_correct_cols[i];
+    }
+    std::cout << std::endl;
 }
 
 
@@ -561,7 +566,7 @@ int main(int argc, char **argv)
     make_map(mymap);
 
     print_map(mymap);
-    //solve_map_random(mymap);
+    // solve_map_random(mymap);
     solve_map_random_permutate_col(mymap);
     check_map(mymap);
 
